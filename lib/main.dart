@@ -20,7 +20,7 @@ class Quizzler extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           appBar: AppBar(
-            title: Text("Guess The Toon!"),
+            title: Text("Guess The Toons!"),
             backgroundColor: Colors.blue[900],
           ),
           backgroundColor: Colors.grey[900],
