@@ -2,6 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/painting.dart';
+import 'quizbrain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+
+QuizBrain quizBrain = QuizBrain();
 
 void main() {
   runApp(Quizzler());
@@ -10,16 +15,20 @@ void main() {
 class Quizzler extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Guess The Toon!"),
-        ),
-        backgroundColor: Colors.grey[900],
-        body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2.0),
-            child: gt(),
+    return Phoenix(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text("Guess The Toon!"),
+            backgroundColor: Colors.blue[900],
+          ),
+          backgroundColor: Colors.grey[900],
+          body: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 2.0),
+              child: gt(),
+            ),
           ),
         ),
       ),
@@ -33,6 +42,28 @@ class gt extends StatefulWidget {
 }
 
 class _gtState extends State<gt> {
+  void add_score(bool data) {
+    setState(() {
+      if (data) {
+        scoreKeeper.add(
+          Icon(
+            Icons.check,
+            color: Colors.green,
+          ),
+        );
+        quizBrain.nextQuestion();
+      } else {
+        scoreKeeper.add(
+          Icon(
+            Icons.close,
+            color: Colors.red,
+          ),
+        );
+        quizBrain.nextQuestion();
+      }
+    });
+  }
+
   void playSound(String name) {
     final player = AudioCache();
     player.play('$name.mp3');
@@ -61,81 +92,7 @@ class _gtState extends State<gt> {
   }
 
   List<Icon> scoreKeeper = [];
-  List<String> questions = [
-    'adamsfamily',
-    'dexter',
-    'jetsons',
-    'looneytunes',
-    'pinkpanther',
-    'popeye',
-    'rugrats',
-    'spongebob',
-    'teletubbies',
-    'tomjerry',
-  ];
-  List<List<String>> options = [
-    [
-      'Adams Family',
-      'Hey Arnold',
-      'The Fairly OddParents',
-      'Dexters Laboratory',
-    ],
-    [
-      'Go Diego Do',
-      'Dexters Laboratory',
-      'Johnny Bravo',
-      'Swat Kats',
-    ],
-    [
-      'The Flintstones',
-      'Popeye',
-      'Teletubbies',
-      'The Jetsons',
-    ],
-    [
-      'Oswald',
-      'Miffy & Friends',
-      'Looney Tunes',
-      'Sylvester & Tweety',
-    ],
-    [
-      'Pink Panther',
-      'James Bond',
-      'Swat Kats',
-      'Ed Edd n Eddy',
-    ],
-    [
-      'Johny Bravo',
-      'Popeye',
-      'Rugrats',
-      'Samurai Jack',
-    ],
-    [
-      'Rugrats',
-      'Tom & Jerry',
-      'The Wild Thornberrys',
-      'Richie Rich',
-    ],
-    [
-      'Barney & Friends',
-      'Spongebob',
-      'Phineas & Ferb',
-      'Oswald',
-    ],
-    [
-      'Teletubbies',
-      'Barney & Friends',
-      'Miffy & Friends',
-      'The Jetsons',
-    ],
-    [
-      'Noddy',
-      'Tom & Jerry',
-      'Pingu',
-      'Sylvester & Tweety',
-    ],
-  ];
-  int count = 0;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -149,83 +106,17 @@ class _gtState extends State<gt> {
             fontSize: 25.0,
           ),
         ),
-        soundKey(color: Colors.green, name: questions[count]),
+        soundKey(color: Colors.green, name: quizBrain.getQuestionText()),
         Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Flexible(
-                child: FlatButton(
-                  onPressed: () {
-                    setState(() {
-                      scoreKeeper.add(
-                        Icon(
-                          Icons.check,
-                          color: Colors.green,
-                        ),
-                      );
-                      count++;
-                    });
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
-                      color: Colors.blue[900],
-                    ),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
-                    margin: EdgeInsets.all(5.0),
-                    child: Center(
-                      child: Text(
-                        options[count][0].toString(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              flex_button(0),
               SizedBox(
                 width: 10.0,
               ),
-              Flexible(
-                flex: 1,
-                child: FlatButton(
-                  onPressed: () {
-                    {
-                      setState(() {
-                        scoreKeeper.add(
-                          Icon(
-                            Icons.close,
-                            color: Colors.red,
-                          ),
-                        );
-                        count++;
-                      });
-                    }
-                    ;
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
-                      color: Colors.blue[900],
-                    ),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 40.0),
-                    margin: EdgeInsets.all(10.0),
-                    child: Text(
-                      options[count][1].toString(),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              flex_button(1),
             ],
           ),
         ),
@@ -233,67 +124,11 @@ class _gtState extends State<gt> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Flexible(
-              child: FlatButton(
-                onPressed: () {
-                  setState(() {
-                    scoreKeeper.add(
-                      Icon(
-                        Icons.close,
-                        color: Colors.red,
-                      ),
-                    );
-                    count++;
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25.0),
-                    color: Colors.blue[900],
-                  ),
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    options[count][2].toString(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            flex_button(2),
             SizedBox(
               width: 10.0,
             ),
-            Flexible(
-              child: FlatButton(
-                onPressed: () {
-                  setState(() {
-                    scoreKeeper.add(
-                      Icon(
-                        Icons.close,
-                        color: Colors.red,
-                      ),
-                    );
-                    count++;
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25.0),
-                    color: Colors.blue[900],
-                  ),
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    options[count][3].toString(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            flex_button(3),
           ],
         ),
         Row(
@@ -302,14 +137,38 @@ class _gtState extends State<gt> {
       ],
     );
   }
-}
 
-//soundKey(color: Colors.orange, name: 'dexter'),
-//soundKey(color: Colors.yellow, name: 'jetsons'),
-//soundKey(color: Colors.green, name: 'looneytunes'),
-//soundKey(color: Colors.teal, name: 'pinkpanther'),
-//soundKey(color: Colors.blue, name: 'popeye'),
-//soundKey(color: Colors.purple, name: 'rugrats'),
-//soundKey(color: Colors.pink, name: 'spongebob'),
-//soundKey(color: Colors.brown, name: 'teletubbies'),
-//soundKey(color: Colors.white, name: 'tomjerry'),
+  Flexible flex_button(int number) {
+    return Flexible(
+      child: FlatButton(
+        onPressed: () {
+          String correctAns = quizBrain.getQuestionAnswers();
+          if (correctAns == quizBrain.getOptions()[number]) {
+            add_score(true);
+          } else {
+            add_score(false);
+            quizBrain.isfinished(context);
+          }
+          ;
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            color: Colors.blue[900],
+          ),
+          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
+          margin: EdgeInsets.all(5.0),
+          child: Center(
+            child: Text(
+              quizBrain.getOptions()[number].toString(),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20.0,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
