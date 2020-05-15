@@ -9,12 +9,7 @@ class QuizBrain {
   List<Questions> _questionBank = [
     Questions(
         'adamsfamily',
-        [
-          'Adams Family',
-          'Hey Arnold',
-          'The Fairly OddParents',
-          'Dexters Laboratory'
-        ],
+        ['Adams Family', 'Hey Arnold', 'Ninja Hatori', 'Dexters Laboratory'],
         'Adams Family'),
     Questions(
         'dexter',
@@ -83,9 +78,9 @@ class QuizBrain {
   _onAlertButtonsPressed(context) {
     Alert(
       style: AlertStyle(
-        backgroundColor: Colors.white30,
-        titleStyle: TextStyle(color: Colors.amber),
-        descStyle: TextStyle(color: Colors.lightGreen),
+        backgroundColor: Colors.purple[900],
+        titleStyle: TextStyle(color: Colors.yellow[800], fontFamily: 'Acme'),
+        descStyle: TextStyle(color: Colors.yellow[800], fontFamily: 'Acme'),
       ),
       context: context,
       type: AlertType.success,
@@ -93,11 +88,14 @@ class QuizBrain {
       desc: "Thats Awesome",
       buttons: [
         DialogButton(
+          color: Colors.yellow[800],
           child: Text(
             "Play Again",
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: TextStyle(
+                color: Colors.black, fontSize: 20, fontFamily: 'Acme'),
           ),
           onPressed: () {
+            reset();
             Phoenix.rebirth(context);
           },
           width: 120,
